@@ -63,7 +63,7 @@ int8_t stallSensitivity = STALLSENSITIVITY;  // Sensitivity for stall detection
 String inputString = "";
 
 void setup() {
-  // Initialize serial communication
+  // Initialise serial communication
   Serial.begin(9600);
   while (!Serial) {
     ; // Wait for serial port to connect
@@ -79,7 +79,7 @@ void setup() {
     ; // Wait for 'b' character
   }
   
-  // Initialize uStepper S32 with closed loop control
+  // Initialise uStepper S32 with closed loop control
   stepper.setup(CLOSEDLOOP, STEPSPERREV, 1, 1, 1, 1, 0);  // Setup with closed loop, STEPSPERREV steps per revolution
   
   // Check motor orientation
@@ -89,10 +89,10 @@ void setup() {
   stepper.setMaxVelocity(maxVelocity);
   stepper.setMaxAcceleration(maxAcceleration);
   
-  // Initialize home position to current position
+  // Initialise home position to current position
   homeOffset = stepper.angleMoved();
   
-  // Initialize end position to same as home (will be set later)
+  // Initialise end position to same as home (will be set later)
   endOffset = homeOffset;
   
   // Print welcome message and help

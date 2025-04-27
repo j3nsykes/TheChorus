@@ -44,7 +44,7 @@ class MovingMotor {
                 float upVelMult = 3.0, float upAccMult = 2.0, 
                 float downVelMult = 1.5, float downAccMult = 1.0);
     
-    // Initialize with stepper reference
+    // Initialise with stepper reference
     void init(UstepperS32* stepper);
     
     // Update motor position

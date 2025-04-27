@@ -19,7 +19,7 @@ MovingMotor::MovingMotor(int startPos, float startDistance, float startSpeed, in
   speed = startSpeed;
   distance = startDistance;
   cycles = 0;
-  maxCycles = maxBounces;  // Initialize maxCycles from constructor
+  maxCycles = maxBounces;  // Initialise maxCycles from constructor
   cycleComplete = false;
   isActive = false;
   maxVelocity = maxVel;
@@ -28,10 +28,10 @@ MovingMotor::MovingMotor(int startPos, float startDistance, float startSpeed, in
   upAccelMultiplier = upAccMult;
   downVelocityMultiplier = downVelMult;
   downAccelMultiplier = downAccMult;
-  stepperPtr = NULL;      // Initialize stepper pointer to NULL
+  stepperPtr = NULL;      // Initialise stepper pointer to NULL
 }
 
-// Initialize with stepper reference
+// Initialise with stepper reference
 void MovingMotor::init(UstepperS32* stepper) {
   stepperPtr = stepper;
   
@@ -39,7 +39,7 @@ void MovingMotor::init(UstepperS32* stepper) {
   stepperPtr->setMaxVelocity(maxVelocity);
   stepperPtr->setMaxAcceleration(maxAcceleration);
   
-  // Make sure we're in closed loop mode for accurate positioning
+  // Make sure in closed loop mode for accurate positioning
   stepperPtr->enableClosedLoop();
   
   // Move to the start position - use the startAngle value from constructor
@@ -115,7 +115,7 @@ void MovingMotor::update(boolean activate) {
     } else {
       // Moving toward start position (downward)
       if (abs(currentAngle - startAngle) < 0.5) { // Within 0.5 degrees of start
-        // We've reached the start position, this completes the cycle
+        // Reached the start position, this completes the cycle
         cycleComplete = true;
         Serial.println("Cymbal striking complete - returned to start position");
         stepperPtr->stop();

@@ -19,7 +19,7 @@ MovingMotor::MovingMotor(int startPos, float startDistance, float startSpeed, in
   speed = startSpeed;
   distance = startDistance;
   cycles = 0;
-  maxCycles = maxBounces;  // Initialize maxCycles from constructor
+  maxCycles = maxBounces;  // Initialise maxCycles from constructor
   cycleComplete = false;
   isActive = false;
   maxVelocity = maxVel;
@@ -28,10 +28,10 @@ MovingMotor::MovingMotor(int startPos, float startDistance, float startSpeed, in
   upAccelMultiplier = upAccMult;
   downVelocityMultiplier = downVelMult;
   downAccelMultiplier = downAccMult;
-  stepperPtr = NULL;      // Initialize stepper pointer to NULL
+  stepperPtr = NULL;      // Initialise stepper pointer to NULL
 }
 
-// Initialize with stepper reference
+// Initialise with stepper reference
 void MovingMotor::init(UstepperS32* stepper) {
   stepperPtr = stepper;
   
@@ -84,7 +84,7 @@ int MovingMotor::angleToPosition(float angle) {
 
 
 void MovingMotor::update(boolean activate) {
-  // Check if stepper is initialized
+  // Check if stepper is initialised
   if (stepperPtr == NULL) {
     Serial.println("Error: Stepper not initialized!");
     return;
@@ -100,7 +100,7 @@ void MovingMotor::update(boolean activate) {
     if (direction > 0) {
       // Moving toward end position (upward to hit cymbal)
       if (abs(currentAngle - endAngle) < 0.5) { // Within 0.5 degrees of end
-        // We've reached the end position, reverse direction immediately
+        // Reached the end position, reverse direction immediately
         direction = -1;
         Serial.println("Reached end position (hit cymbal), falling back to start");
         
@@ -115,14 +115,14 @@ void MovingMotor::update(boolean activate) {
     } else {
       // Moving toward start position (downward)
       if (abs(currentAngle - startAngle) < 0.5) { // Within 0.5 degrees of start
-        // We've reached the start position, this completes the cycle
+        // Reached the start position, this completes the cycle
         cycleComplete = true;
         Serial.println("Cymbal striking complete - returned to start position");
         stepperPtr->stop();
       }
     }
     
-    // If we're not at a target position yet and no movement is happening, start movement
+    // If not at a target position yet and no movement is happening, start movement
     if (!cycleComplete && !stepperPtr->getMotorState()) {
       // No active motion, need to start movement
       float targetAngle = (direction > 0) ? endAngle : startAngle;

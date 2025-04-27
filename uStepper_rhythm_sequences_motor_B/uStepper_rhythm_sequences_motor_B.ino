@@ -52,9 +52,9 @@ int activePattern = PATTERN_DISABLED; // Which pattern is currently active
 bool motorActive = false;    // Whether the motor is currently moving
 
 // Beat patterns - each pattern is a list of beat numbers (0-59) where the motor should trigger
-// BEAT_TERMINATOR (255) marks the end of each pattern
+// BEAT_TERMINATOR (255) marks the end of each pattern. Using a high number not in use 
 const byte patterns[][16] = {
-  // Pattern 0: Every 15 beats
+  // Pattern 0: Every 15 beats. All at once. Same across both motors.
   { 0, 15, 30, 45, BEAT_TERMINATOR },
   
   // Pattern 1: Up Down Up Down
@@ -148,7 +148,7 @@ void checkTimer();
 unsigned long getTimeInSeconds();
 
 void setup() {
-  // Initialize serial communication
+  // Initialise serial communication
   Serial.begin(9600);
   Serial.println("Beat Sequencer v2.1 with Timer Mode");
   Serial.println("Send 'b' to begin or wait 5 seconds for auto-start...");
@@ -165,18 +165,18 @@ void setup() {
     delay(10);  // Small delay to prevent CPU hogging
   }
   
-  // Initialize uStepper with closed loop control
+  // Initialise uStepper with closed loop control
   stepper.setup(CLOSEDLOOP, STEPSPERREV, 1, 1, 1, 1, 0);
   stepper.checkOrientation(30.0);
   
-  // Initialize motor
+  // Initialise motor
   motor.init(&stepper);
   
   // Set base BPM and calculate timing
   bpm = 120;  // Explicitly set to 120 BPM
   updateTiming();
   
-  // Initialize timing variables
+  // Initialise timing variables
   prevBeatTime = millis();
   
   // Set mode based on auto-start or manual start
@@ -333,8 +333,7 @@ void checkTimer() {
 
 // Get current time in seconds since start (for timer mode)
 unsigned long getTimeInSeconds() {
-  // For testing, we'll use millis() to simulate time
-  // In a real implementation, use a RTC module to get real time
+  // Use millis() to simulate time
   return (millis() / 1000) % 3600;  // Cycle every hour (3600 seconds)
 }
 

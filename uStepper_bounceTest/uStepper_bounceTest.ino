@@ -41,7 +41,7 @@ MovingMotor motor(
   HOME_POSITION,  // startPos - using defined HOME_POSITION constant
   5,     // startDistance
   0.5,   // startSpeed
-  800,   // endPos (do not go beyond 2080 this is the end of the beam)
+  800,   // endPos (do not go beyond 2000 this is the end of the beam)
   3000,  // maxVelocity - base velocity for cymbal striking
   8000,  // maxAcceleration - high acceleration for responsive cymbal hitting
   5,     // maxBounces - number of times to strike the cymbal
@@ -55,16 +55,16 @@ MovingMotor motor(
 void printStatus();
 
 void setup() {
-  // Initialize serial communication
+  // Initialise serial communication
   Serial.begin(9600);
-  delay(2000);  // Give time for serial to initialize
+  delay(2000);  // Give time for serial to initialise
   
   Serial.println("MOTOR MOVEMENT TEST - uStepper S32");
   Serial.println("Will attempt to move motor to absolute position 0.55");
   
-  // Initialize uStepper S32 with closed loop control
+  // Initialise uStepper S32 with closed loop control
   stepper.setup(CLOSEDLOOP, STEPSPERREV, 1, 1, 1, 1, 0);
-  delay(2000);  // Allow time for stepper to initialize
+  delay(2000);  // Allow time for stepper to initialise
   
   // Check motor orientation - this is necessary for closed-loop operation
   stepper.checkOrientation(30.0);
@@ -117,6 +117,7 @@ void setup() {
   // Now proceed with normal setup
   setupComplete = true;
   
+  // help commands
   Serial.println("\nTesting complete. Motor should have attempted to move left twice.");
   Serial.println("Available commands:");
   Serial.println("  'a' - Activate motor movement (cymbal striking sequence)");
@@ -299,7 +300,6 @@ void processCommand(String command) {
       break;
       
     case 'c':  // Toggle continuous status reporting
-      // For this example, we're just acknowledging the command
       Serial.println("Continuous status reporting function would be toggled here");
       break;
       
