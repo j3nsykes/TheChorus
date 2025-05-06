@@ -1,4 +1,21 @@
+
+----- NEW PRESET: 2025-5-6 16:50:47 -----
+
 Hand1 Squares (Row 1):
-{11, 21, 28, 36}
+{37}
 Hand2 Squares (Row 2):
-{14, 24, 29}
+{30}
+
+----- NEW PRESET: 2025-5-6 16:54:2 -----
+
+Hand1 Squares (Row 1):
+{}
+Hand2 Squares (Row 2):
+{21}
+
+----- NEW PRESET: 2025-5-6 16:54:13 -----
+
+Hand1 Squares (Row 1):
+{33, 52, 54, 56}
+Hand2 Squares (Row 2):
+{44}
