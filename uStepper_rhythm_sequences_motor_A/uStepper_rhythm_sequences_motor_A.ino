@@ -23,8 +23,8 @@ UstepperS32 stepper;
 bool setupComplete = false;
 
 // Mode selection
-bool manualRun = false;     // Manual mode vs. timer mode
-bool timerOn = true;        // Whether timer-based playback is active
+bool manualRun = false;  // Manual mode vs. timer mode
+bool timerOn = true;     // Whether timer-based playback is active
 
 // Create a MovingMotor object for the cymbal striker
 MovingMotor motor(
@@ -42,33 +42,33 @@ MovingMotor motor(
 );
 
 // Motor and timing parameters
-int bpm = 120;               // Base tempo in beats per minute
-unsigned long beatInterval;  // Milliseconds per beat (calculated from BPM)
-unsigned long prevBeatTime;  // Time of last beat
-int beatCount = 0;           // Current beat position
-int activePattern = PATTERN_DISABLED; // Which pattern is currently active
+int bpm = 120;                         // Base tempo in beats per minute
+unsigned long beatInterval;            // Milliseconds per beat (calculated from BPM)
+unsigned long prevBeatTime;            // Time of last beat
+int beatCount = 0;                     // Current beat position
+int activePattern = PATTERN_DISABLED;  // Which pattern is currently active
 
 // Motor activation flags
-bool motorActive = false;    // Whether the motor is currently moving
+bool motorActive = false;  // Whether the motor is currently moving
 
 // Beat patterns - each pattern is a list of beat numbers (0-59) where the motor should trigger
 // BEAT_TERMINATOR (255) marks the end of each pattern
 const byte patterns[][16] = {
   // Pattern 0: Every 15 beats. All at once. Same across both motors.
   { 0, 15, 30, 45, BEAT_TERMINATOR },
-  
+
   // Pattern 1: Up Down Up Down
   { 0, 15, 32, 49, BEAT_TERMINATOR },
-  
+
   // Pattern 2: Up Down Up Down #2
   { 7, 23, 41, 59, BEAT_TERMINATOR },
-  
+
   // Pattern 3: W rhythm
   { 0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, BEAT_TERMINATOR },
-  
+
   // Pattern 4: Syncopate
   { 2, 6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50, 54, 58, BEAT_TERMINATOR },
-  
+
   // Pattern 5: Random occasional
   { 4, 18, 26, 43, BEAT_TERMINATOR },
 
@@ -98,6 +98,49 @@ const byte patterns[][16] = {
 
   // Pattern 14: Single beat - just beat 45
   { 45, BEAT_TERMINATOR }
+
+  /*
+  **Patterns from screenshots on Tues 29th April
+  ** maybe comment out a pattern above it is substituting and copy/paste it in there. 
+  //screenshot 1
+  //Motor A 
+  {0,8, 24,BEAT_TERMINATOR}
+  //Motor B (do not comment in on motorA just here to see visual pairing)
+  //{0, 29, 52, BEAT_TERMINATOR}
+
+ //screenshot 2 
+ //Motor A 
+ {1, 15, 30, 44, 58,BEAT_TERMINATOR}
+ //Motor B (do not comment in on motorA just here to see visual pairing)
+ {8, 23, 37, 51,BEAT_TERMINATOR}
+
+screenshot 3
+//Motor A 
+{0,8,16,24,32,40,48,56,BEAT_TERMINATOR}
+ //Motor B (do not comment in on motorA just here to see visual pairing)
+{4,12,20,28,36,42,50,58,BEAT_TERMINATOR}
+
+screenshot 4 (check not too fast for motors to reset and mvoe)
+//Motor A 
+{0,2,8,10,16,18,24,26,32,34,40,42,48,50,56,58,BEAT_TERMINATOR}
+ //Motor B (do not comment in on motorA just here to see visual pairing)
+{4,6,12,14,20,22,28,30,36,38,44,46,52,54,BEAT_TERMINATOR}
+
+
+screenshot 5
+//Motor A 
+{0,4,12,16,24,28,36,40,48,52,BEAT_TERMINATOR}
+ //Motor B (do not comment in on motorA just here to see visual pairing)
+{0,12,24,35,47,52,BEAT_TERMINATOR}
+
+screenshot 6
+//Motor A 
+{0,2,4,6,8,12,15,17,19,21,24,BEAT_TERMINATOR}
+ //Motor B (do not comment in on motorA just here to see visual pairing)
+{1,4,9,12,16,19,24,BEAT_TERMINATOR}
+
+
+  */
 };
 
 // Timer data structure - Format: {start_min, start_sec, end_min, end_sec}
@@ -122,22 +165,22 @@ const int timerData[][4] = {
 
 // Pattern index for each timer slot - which pattern plays during each timer period
 const byte timerPatterns[] = {
-  PATTERN_DISABLED, // Silence
-  0,                // Pattern 0 
-  PATTERN_DISABLED, // Silence
-  1,                // Pattern 1
-  3,                // Pattern 3
-  PATTERN_DISABLED, // Silence
-  5,                // Pattern 5
-  PATTERN_DISABLED, // Silence
-  9,                // Pattern 9
-  PATTERN_DISABLED, // Silence
+  PATTERN_DISABLED,  // Silence
+  0,                 // Pattern 0
+  PATTERN_DISABLED,  // Silence
+  1,                 // Pattern 1
+  3,                 // Pattern 3
+  PATTERN_DISABLED,  // Silence
+  5,                 // Pattern 5
+  PATTERN_DISABLED,  // Silence
+  9,                 // Pattern 9
+  PATTERN_DISABLED,  // Silence
   11,                // Pattern 11
-  PATTERN_DISABLED, // Silence
-  5,                // Pattern 5
-  PATTERN_DISABLED, // Silence
+  PATTERN_DISABLED,  // Silence
+  5,                 // Pattern 5
+  PATTERN_DISABLED,  // Silence
   13,                // Pattern 13
-  PATTERN_DISABLED  // Silence
+  PATTERN_DISABLED   // Silence
 };
 
 // Forward declarations
@@ -164,28 +207,28 @@ void setup() {
     }
     delay(10);  // Small delay to prevent CPU hogging
   }
-  
+
   // Initialise uStepper with closed loop control
   stepper.setup(CLOSEDLOOP, STEPSPERREV, 1, 1, 1, 1, 0);
   stepper.checkOrientation(30.0);
-  
+
   // Initialise motor
   motor.init(&stepper);
-  
+
   // Set base BPM and calculate timing
   bpm = 120;  // Explicitly set to 120 BPM
   updateTiming();
-  
+
   // Initialise timing variables
   prevBeatTime = millis();
-  
+
   // Set mode based on auto-start or manual start
   if (manualStart) {
     // If user pressed 'b', start in manual mode
     manualRun = true;
     timerOn = false;
     Serial.println("Manual start detected - starting in MANUAL mode");
-    
+
     // Start with no active pattern
     activePattern = PATTERN_DISABLED;
   } else {
@@ -193,26 +236,26 @@ void setup() {
     manualRun = false;
     timerOn = true;
     Serial.println("Auto-starting in TIMER mode...");
-    
+
     // Immediately check timer to set the right pattern
     checkTimer();
   }
-  
+
   // Print actual timing information
   Serial.print("Starting at ");
   Serial.print(bpm);
   Serial.print(" BPM with beat interval of ");
   Serial.print(beatInterval);
   Serial.println("ms");
-  
+
   Serial.print("Mode: ");
   Serial.println(manualRun ? "Manual" : "Timer");
   Serial.print("Active Pattern: ");
   Serial.println(activePattern == PATTERN_DISABLED ? "None" : String(activePattern));
-  
+
   // Setup complete
   setupComplete = true;
-  
+
   // Print help
   printHelp();
 }
@@ -220,26 +263,26 @@ void setup() {
 void loop() {
   // Only proceed if setup is complete
   if (!setupComplete) return;
-  
+
   // Check for serial commands
   if (Serial.available()) {
     processCommand();
   }
-  
+
   // If in timer mode, check if we need to change patterns
   if (timerOn && !manualRun) {
     checkTimer();
   }
-  
+
   // Handle beat timing
   unsigned long currentTime = millis();
   if (currentTime - prevBeatTime >= beatInterval) {
     // Time for a new beat
     prevBeatTime = currentTime;  // Updated to prevent drift
-    
+
     // Increment beat counter (0-59 then back to 0)
     beatCount = (beatCount + 1) % 60;
-    
+
     // Visual indication every 5 beats
     if (beatCount % 5 == 0) {
       Serial.print("Beat: ");
@@ -248,7 +291,7 @@ void loop() {
       Serial.print(currentTime / 1000.0);
       Serial.println("s)");
     }
-    
+
     // Check if this beat is in the active pattern
     if (activePattern != PATTERN_DISABLED && isInPattern(beatCount, activePattern)) {
       // Trigger the motor if it's not already active
@@ -260,10 +303,10 @@ void loop() {
       }
     }
   }
-  
+
   // Update motor state
   motor.update(motorActive);
-  
+
   // Check if motor movement is complete
   if (motorActive && motor.isComplete()) {
     motorActive = false;
@@ -276,16 +319,16 @@ bool isInPattern(int beat, int patternIndex) {
   if (patternIndex == PATTERN_DISABLED) {
     return false;
   }
-  
+
   const byte* pattern = patterns[patternIndex];
-  
+
   // Check each beat in the pattern until we reach the terminator
   for (int i = 0; pattern[i] != BEAT_TERMINATOR; i++) {
     if (pattern[i] == beat) {
       return true;
     }
   }
-  
+
   return false;
 }
 
@@ -293,40 +336,40 @@ bool isInPattern(int beat, int patternIndex) {
 void checkTimer() {
   // Get current time in seconds
   unsigned long now = getTimeInSeconds();
-  
+
   // Check each timer period
   for (int i = 0; i < sizeof(timerData) / sizeof(timerData[0]); i++) {
     // Convert timer start/end to seconds
     unsigned long startTime = timerData[i][0] * 60 + timerData[i][1];
     unsigned long endTime = timerData[i][2] * 60 + timerData[i][3];
-    
+
     // Check if current time is within this timer period
     if (now >= startTime && now < endTime) {
       // Get the pattern for this timer period
       byte timerPattern = timerPatterns[i];
-      
+
       // Only update if different
       if (activePattern != timerPattern) {
         int oldPattern = activePattern;
         activePattern = timerPattern;
-        
+
         Serial.print("Timer: Changed pattern from ");
         Serial.print(oldPattern);
         Serial.print(" to ");
         Serial.print(activePattern);
         Serial.print(" at time ");
-        Serial.print(now / 60); // minutes
+        Serial.print(now / 60);  // minutes
         Serial.print(":");
-        Serial.print(now % 60); // seconds
+        Serial.print(now % 60);  // seconds
         Serial.println();
-        
+
         if (activePattern == PATTERN_DISABLED) {
           Serial.println("Pattern disabled (silence)");
         } else {
           printPattern(activePattern);
         }
       }
-      return; // Found the right time slot, exit
+      return;  // Found the right time slot, exit
     }
   }
 }
@@ -347,16 +390,16 @@ void triggerMotor() {
 void updateTiming() {
   // This calculates the exact interval for 120 BPM (500ms per beat)
   beatInterval = 60000 / bpm;  // Convert BPM to milliseconds
-  
+
   // Reset the beat timer when changing tempo to prevent timing issues
   prevBeatTime = millis();
-  
+
   Serial.print("Tempo: ");
   Serial.print(bpm);
   Serial.print(" BPM (");
   Serial.print(beatInterval);
   Serial.println("ms per beat)");
-  
+
   // Double-check the calculation
   float beatsPerSecond = bpm / 60.0;
   Serial.print("This is ");
@@ -367,35 +410,35 @@ void updateTiming() {
 // Process serial commands
 void processCommand() {
   char cmd = Serial.read();
-  
+
   switch (cmd) {
-    case 'h': // Help
+    case 'h':  // Help
       printHelp();
       break;
-      
-    case '0': // Stop pattern
+
+    case '0':  // Stop pattern
       if (manualRun) {
         activePattern = PATTERN_DISABLED;
         Serial.println("Pattern disabled");
       }
       break;
-      
-    case 'm': // Switch to manual mode
+
+    case 'm':  // Switch to manual mode
       manualRun = true;
       timerOn = false;
       Serial.println("Switched to MANUAL mode - timer disabled");
       break;
-      
-    case 't': // Switch to timer mode
+
+    case 't':  // Switch to timer mode
       manualRun = false;
       timerOn = true;
       Serial.println("Switched to TIMER mode - using scheduled patterns");
       break;
-      
-    case 'p': // Print current status
+
+    case 'p':  // Print current status
       printStatus();
       break;
-      
+
     default:
       // Check for pattern selection (1-9, then a-f for patterns 10-15)
       if (cmd >= '1' && cmd <= '9' && manualRun) {
@@ -405,35 +448,29 @@ void processCommand() {
         Serial.print(activePattern);
         Serial.println(" activated");
         printPattern(activePattern);
-      }
-      else if (cmd >= 'a' && cmd <= 'f' && manualRun) {
+      } else if (cmd >= 'a' && cmd <= 'f' && manualRun) {
         // For commands a-f, select patterns 9-14
         activePattern = (cmd - 'a') + 9;
         Serial.print("Pattern ");
         Serial.print(activePattern);
         Serial.println(" activated");
         printPattern(activePattern);
-      }
-      else if (cmd == 'x') { // Manual motor trigger
+      } else if (cmd == 'x') {  // Manual motor trigger
         triggerMotor();
         Serial.println("Motor triggered manually");
-      }
-      else if (cmd == 's') { // Stop motor
+      } else if (cmd == 's') {  // Stop motor
         stepper.stop();
         motorActive = false;
         Serial.println("Motor stopped");
-      }
-      else if (cmd == 'r') { // Reset beat counter
+      } else if (cmd == 'r') {  // Reset beat counter
         beatCount = 0;
         prevBeatTime = millis();
         Serial.println("Beat counter reset to 0");
-      }
-      else if (cmd == '+') { // Increase tempo
+      } else if (cmd == '+') {  // Increase tempo
         bpm += 10;
         if (bpm > 300) bpm = 300;
         updateTiming();
-      }
-      else if (cmd == '-') { // Decrease tempo
+      } else if (cmd == '-') {  // Decrease tempo
         bpm -= 10;
         if (bpm < 30) bpm = 30;
         updateTiming();
@@ -444,11 +481,11 @@ void processCommand() {
 
 // Print the beats in a pattern
 void printPattern(int patternIndex) {
-  if (patternIndex < 0 || patternIndex >= sizeof(patterns)/sizeof(patterns[0])) {
+  if (patternIndex < 0 || patternIndex >= sizeof(patterns) / sizeof(patterns[0])) {
     Serial.println("Invalid pattern index");
     return;
   }
-  
+
   const byte* pattern = patterns[patternIndex];
   Serial.print("Beats: ");
   for (int i = 0; pattern[i] != BEAT_TERMINATOR; i++) {
@@ -463,10 +500,10 @@ void printStatus() {
   Serial.println("\n--- Beat Sequencer Status ---");
   Serial.print("Mode: ");
   Serial.println(manualRun ? "MANUAL" : "TIMER");
-  
+
   Serial.print("Timer Mode: ");
   Serial.println(timerOn ? "ENABLED" : "DISABLED");
-  
+
   Serial.print("Active Pattern: ");
   if (activePattern == PATTERN_DISABLED) {
     Serial.println("DISABLED (silence)");
@@ -480,33 +517,33 @@ void printStatus() {
     }
     Serial.println();
   }
-  
+
   Serial.print("Current Beat: ");
   Serial.println(beatCount);
-  
+
   Serial.print("Tempo: ");
   Serial.print(bpm);
   Serial.print(" BPM (");
   Serial.print(beatInterval);
   Serial.println("ms per beat)");
-  
+
   Serial.print("Motor Active: ");
   Serial.println(motorActive ? "YES" : "NO");
-  
+
   if (timerOn && !manualRun) {
     // Print current timer info
     unsigned long now = getTimeInSeconds();
     Serial.print("Current Time: ");
-    Serial.print(now / 60); // minutes
+    Serial.print(now / 60);  // minutes
     Serial.print(":");
-    Serial.print(now % 60); // seconds
+    Serial.print(now % 60);  // seconds
     Serial.println();
-    
+
     // Find current timer period
     for (int i = 0; i < sizeof(timerData) / sizeof(timerData[0]); i++) {
       unsigned long startTime = timerData[i][0] * 60 + timerData[i][1];
       unsigned long endTime = timerData[i][2] * 60 + timerData[i][3];
-      
+
       if (now >= startTime && now < endTime) {
         Serial.print("Current Timer Period: ");
         Serial.print(timerData[i][0]);
@@ -523,7 +560,7 @@ void printStatus() {
       }
     }
   }
-  
+
   Serial.println("-------------------------------");
 }
 
@@ -534,12 +571,12 @@ void printHelp() {
   Serial.println("  'm' - Switch to manual mode");
   Serial.println("  't' - Switch to timer mode");
   Serial.println("  'p' - Print current status");
-  
+
   Serial.println("\nManual Mode Commands:");
   Serial.println("  '1'-'9' - Patterns 0-8");
   Serial.println("  'a'-'f' - Patterns 9-14");
   Serial.println("  '0' - Disable pattern");
-  
+
   Serial.println("\nCommon Commands:");
   Serial.println("  'x' - Trigger motor manually");
   Serial.println("  's' - Stop motor");

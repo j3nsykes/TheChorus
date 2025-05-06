@@ -3,8 +3,9 @@ class Tick implements Instrument
 {
   void noteOn( float dur )
   {
-
+    if ( hand1Row[beat] ) hand1.trigger();
     if ( hand1Row[beat] ) flipMotor1();
+    if ( hand2Row[beat] ) hand2.trigger();
     if ( hand2Row[beat] ) flipMotor2();
 
   }

@@ -98,6 +98,49 @@ const byte patterns[][16] = {
 
   // Pattern 14: Single beat - just beat 45
   { 45, BEAT_TERMINATOR }
+
+    /*
+  **Patterns from screenshots on Tues 29th April
+  ** maybe comment out a pattern above it is substituting and copy/paste it in there. 
+  //screenshot 1
+//Motor A (do not comment in on motorB just here to see visual pairing)
+  {0,8, 24,BEAT_TERMINATOR}
+  //Motor B 
+  //{0, 29, 52, BEAT_TERMINATOR}
+
+ //screenshot 2 
+//Motor A (do not comment in on motorB just here to see visual pairing)
+ {1, 15, 30, 44, 58,BEAT_TERMINATOR}
+ //Motor B 
+ {8, 23, 37, 51,BEAT_TERMINATOR}
+
+screenshot 3
+//Motor A (do not comment in on motorB just here to see visual pairing)
+{0,8,16,24,32,40,48,56,BEAT_TERMINATOR}
+ //Motor B 
+{4,12,20,28,36,42,50,58,BEAT_TERMINATOR}
+
+screenshot 4 (check not too fast for motors to reset and mvoe)
+//Motor A (do not comment in on motorB just here to see visual pairing)
+{0,2,8,10,16,18,24,26,32,34,40,42,48,50,56,58,BEAT_TERMINATOR}
+ //Motor B 
+{4,6,12,14,20,22,28,30,36,38,44,46,52,54,BEAT_TERMINATOR}
+
+
+screenshot 5
+//Motor A (do not comment in on motorB just here to see visual pairing)
+{0,4,12,16,24,28,36,40,48,52,BEAT_TERMINATOR}
+ //Motor B 
+{0,12,24,35,47,52,BEAT_TERMINATOR}
+
+screenshot 6
+//Motor A (do not comment in on motorB just here to see visual pairing)
+{0,2,4,6,8,12,15,17,19,21,24,BEAT_TERMINATOR}
+ //Motor B 
+{1,4,9,12,16,19,24,BEAT_TERMINATOR}
+
+
+  */
 };
 
 // Timer data structure - Format: {start_min, start_sec, end_min, end_sec}
