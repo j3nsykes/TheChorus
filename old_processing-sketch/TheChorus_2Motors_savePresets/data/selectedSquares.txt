@@ -1,0 +1,4 @@
+Hand1 Squares (Row 1):
+{11, 21, 28, 36}
+Hand2 Squares (Row 2):
+{14, 24, 29}
