@@ -1,3 +1,6 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+
 import processing.opengl.*;
 import ddf.minim.*;
 import ddf.minim.ugens.*;
@@ -129,9 +132,9 @@ void debugText() {
   // Add info about saving if in case 6
   if (inCase6) {
     fill(255, 0, 0);
-    text("FREESTYLE MODE - Press 'p' to save pattern", 500, 30);
-    text("Hand1 (Row 1): " + selectedSquaresHand1.size() + " squares", 500, 60);
-    text("Hand2 (Row 2): " + selectedSquaresHand2.size() + " squares", 500, 90);
+    text("FREESTYLE MODE - Press 'p' to save pattern", 500, 330);
+    text("Hand1 (Row 1): " + selectedSquaresHand1.size() + " squares", 500, 360);
+    text("Hand2 (Row 2): " + selectedSquaresHand2.size() + " squares", 500, 390);
   }
 
   for (int i=1; i<3; i++) {
@@ -294,12 +297,28 @@ void mousePressed()
   }
 }
 
+// Add function to save the selected squares to a file
 void saveSelectedSquaresToFile() {
-  PrintWriter output;
-  
   try {
-    // Create a new file in the data directory
-    output = createWriter(dataPath("selectedSquares.txt"));
+    // Get the current date and time for the timestamp
+    String timestamp = year() + "-" + month() + "-" + day() + " " + hour() + ":" + minute() + ":" + second();
+    
+    // File path
+    String filePath = dataPath("selectedSquares.txt");
+    
+    // Create the data directory if it doesn't exist
+    File dataDir = new File(dataPath(""));
+    if (!dataDir.exists()) {
+      dataDir.mkdir();
+    }
+    
+    // Create a FileWriter with append=true
+    FileWriter fw = new FileWriter(filePath, true);
+    BufferedWriter bw = new BufferedWriter(fw);
+    PrintWriter output = new PrintWriter(bw);
+    
+    // Add a separator between entries
+    output.println("\n----- NEW PRESET: " + timestamp + " -----\n");
     
     // Write the hand1 squares (row 1)
     output.println("Hand1 Squares (Row 1):");
@@ -327,8 +346,9 @@ void saveSelectedSquaresToFile() {
     output.flush();
     output.close();
     
-    println("Selected squares saved to data/selectedSquares.txt");
+    println("Selected squares appended to data/selectedSquares.txt");
   } catch (Exception e) {
     println("Error saving file: " + e.getMessage());
+    e.printStackTrace();
   }
 }
