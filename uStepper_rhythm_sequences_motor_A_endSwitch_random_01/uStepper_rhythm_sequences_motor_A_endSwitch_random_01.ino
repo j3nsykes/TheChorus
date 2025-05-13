@@ -547,14 +547,7 @@ void loop() {
     checkQuickTestPattern();
   }
 
-  // Handle beat timing
-  unsigned long currentTime = millis();
-  if (currentTime - prevBeatTime >= beatInterval) {
-    // Time for a new beat
-    prevBeatTime = currentTime;  // Updated to prevent drift
 
-    // Increment beat counter (0-59 then back to 0)
-    beatCount = (beatCount + 1) % 60;
 
   // Handle beat timing
   unsigned long currentTime = millis();
