@@ -132,35 +132,142 @@ void initializeDynamicPatterns() {
   }
 }
 
-// Function to update pattern 0 with a random beat
+// Function to update pattern 0 with multiple random beats (sorted, no duplicates)
 void updateRandomPattern() {
-  // Generate a random beat (0-59)
-  byte randomBeat = random(60);
-
-  // Update pattern 0
-  dynamicPatterns[0][0] = randomBeat;
-  dynamicPatterns[0][1] = BEAT_TERMINATOR;
-
-  Serial.print("Updated pattern 0 with random beat: ");
-  Serial.println(randomBeat);
+  // Define how many random beats we want
+  const int numBeats = 3;
+  
+  // Array to store the random beats
+  byte randomBeats[numBeats];
+  
+  // Generate unique random beats
+  for (int i = 0; i < numBeats; i++) {
+    bool unique;
+    byte newBeat;
+    do {
+      unique = true;
+      newBeat = random(60);
+      
+      // Check if this beat is already in our array
+      for (int j = 0; j < i; j++) {
+        if (randomBeats[j] == newBeat) {
+          unique = false;
+          break;
+        }
+      }
+    } while (!unique);
+    
+    randomBeats[i] = newBeat;
+  }
+  
+  // Sort the beats in ascending order (optional)
+  for (int i = 0; i < numBeats - 1; i++) {
+    for (int j = i + 1; j < numBeats; j++) {
+      if (randomBeats[i] > randomBeats[j]) {
+        // Swap beats to sort them
+        byte temp = randomBeats[i];
+        randomBeats[i] = randomBeats[j];
+        randomBeats[j] = temp;
+      }
+    }
+  }
+  
+  // Update the pattern and print information
+  Serial.print("Updated pattern 0 with random beats: ");
+  
+  for (int i = 0; i < numBeats; i++) {
+    // Update pattern
+    dynamicPatterns[0][i] = randomBeats[i];
+    
+    // Print information
+    Serial.print(randomBeats[i]);
+    if (i < numBeats - 1) {
+      Serial.print(", ");
+    }
+  }
+  
+  // Add terminator
+  dynamicPatterns[0][numBeats] = BEAT_TERMINATOR;
+  
+  Serial.println();
 }
 
 //function to update multiple random patterns. Change line in setup if using this
 // Function to update multiple random patterns
+// Function to update multiple patterns with multiple random beats (sorted, no duplicates)
 void updateRandomPatterns() {
-  // Update pattern 0
-  dynamicPatterns[0][0] = random(60);
-  dynamicPatterns[0][1] = BEAT_TERMINATOR;
-
-  // Update pattern 5 (another random pattern)
-  dynamicPatterns[5][0] = random(60);
-  dynamicPatterns[5][1] = BEAT_TERMINATOR;
-
-  // Update pattern 6
-  dynamicPatterns[6][0] = random(60);
-  dynamicPatterns[6][1] = BEAT_TERMINATOR;
-
-  Serial.println("Updated random patterns with new beat values");
+  // Define pattern configuration: which patterns to update and how many beats per pattern
+  const int patternConfig[][2] = {
+    {0, 3},  // Pattern 0 with 3 random beats
+    {5, 2},  // Pattern 5 with 2 random beats
+    {6, 4}   // Pattern 6 with 4 random beats
+  };
+  
+  const int numPatternsToUpdate = sizeof(patternConfig) / sizeof(patternConfig[0]);
+  
+  // Update each pattern
+  for (int p = 0; p < numPatternsToUpdate; p++) {
+    int patternIndex = patternConfig[p][0];
+    int numBeats = patternConfig[p][1];
+    
+    // Array to store the random beats
+    byte randomBeats[numBeats];
+    
+    // Generate unique random beats
+    for (int i = 0; i < numBeats; i++) {
+      bool unique;
+      byte newBeat;
+      do {
+        unique = true;
+        newBeat = random(60);
+        
+        // Check if this beat is already in our array
+        for (int j = 0; j < i; j++) {
+          if (randomBeats[j] == newBeat) {
+            unique = false;
+            break;
+          }
+        }
+      } while (!unique);
+      
+      randomBeats[i] = newBeat;
+    }
+    
+    // Sort the beats in ascending order (optional)
+    for (int i = 0; i < numBeats - 1; i++) {
+      for (int j = i + 1; j < numBeats; j++) {
+        if (randomBeats[i] > randomBeats[j]) {
+          // Swap beats to sort them
+          byte temp = randomBeats[i];
+          randomBeats[i] = randomBeats[j];
+          randomBeats[j] = temp;
+        }
+      }
+    }
+    
+    // Update the pattern and print information
+    Serial.print("Updated pattern ");
+    Serial.print(patternIndex);
+    Serial.print(" with ");
+    Serial.print(numBeats);
+    Serial.print(" random beats: ");
+    
+    for (int i = 0; i < numBeats; i++) {
+      // Update pattern
+      dynamicPatterns[patternIndex][i] = randomBeats[i];
+      
+      // Print information
+      Serial.print(randomBeats[i]);
+      if (i < numBeats - 1) {
+        Serial.print(", ");
+      }
+    }
+    
+    // Add terminator
+    dynamicPatterns[patternIndex][numBeats] = BEAT_TERMINATOR;
+    
+    Serial.println();
+  }
 }
 
 // Quick test patterns - only the active patterns (no silences)
@@ -449,6 +556,25 @@ void loop() {
     // Increment beat counter (0-59 then back to 0)
     beatCount = (beatCount + 1) % 60;
 
+  // Handle beat timing
+  unsigned long currentTime = millis();
+  if (currentTime - prevBeatTime >= beatInterval) {
+    // Time for a new beat
+    prevBeatTime = currentTime;  // Updated to prevent drift
+
+    // Increment beat counter (0-59 then back to 0)
+    int previousBeat = beatCount;
+    beatCount = (beatCount + 1) % 60;
+
+    // If we just wrapped around to beat 0, update random patterns
+    if (previousBeat == 59 && beatCount == 0) {
+      // Check if the active pattern is one of our random patterns
+      if (activePattern == 0) {
+        Serial.println("Beat cycle completed - updating random pattern");
+        updateRandomPattern(); // Or updateRandomPattern() if you're just updating pattern 0
+      }
+    }
+
     // Visual indication every 5 beats
     if (beatCount % 5 == 0) {
       Serial.print("Beat: ");
@@ -652,7 +778,7 @@ void startQuickTest() {
   if (activePattern == 0) {
     updateRandomPattern();
   }
-  
+
   // Record the start time for the current pattern
   patternStartTime = millis();
 
